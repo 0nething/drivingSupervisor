@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <title>Driving supervisor</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container" id="drivingInfosZone">
+            <div class="container" id="leftGroup">
+                <div id="driveSelector">
+                    <span id="park">P</span>
+                    <span id="reverse">R</span>
+                    <span id="neutral">N</span>
+                    <span id="drive">D</span></div>
+                <p id="ADASState">{ADAS State}</p>
+            </div>
+            <p id="speedDisplay"><span id="speedValue">00</span> km/h</p>
+        </div>
+        <div id="bottomBorder"></div>
+    </header>
+
+    <main>
+        <aside class="container" id="lightsZone">
+            <img class="light" id="beamLights" src="source/images/tmp_small.png">
+            <img class="light" id="positionLights" src="source/images/tmp_small.png">
+            <img class="light" id="fogLights" src="source/images/tmp_small.png">
+            <img class="light" id="" src="source/images/tmp_small.png">
+        </aside>
+        <section class="container" id="adasZone">
+            <section>
+                <img class="light" id="leftBlinker" src ="source/images/tmp_small.png">
+                <img class="adasOverlay" id="adasVisualisation" src="source/images/tmp_big.png">
+                <img class="adasOverlay" id="carVisualisation" src="source/images/tmp_big.png">
+                <img class="light" id="rightBlinker" src ="source/images/tmp_small.png">
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <div id="alertBox">
+            <img id="alertPicture" src="source/images/tmp_small.png">
+            <p id="alertMessage">{Alert}</p>
+        </div>
+    </footer>
+</body>
+</html>
