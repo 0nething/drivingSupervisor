@@ -49,7 +49,7 @@ function clearMessage(){
 
 // Actualisation affichage voyants
 function refreshLights(){
-    switch(vehicleFeaturesDatas.lights){
+    switch(vehicleFeaturesDatas.light){
         case 0:
             lowBeamLight.style.opacity=0;
             highBeamLight.style.opacity=0;
@@ -129,18 +129,25 @@ function refreshLights(){
             autosteerLight.style.opacity=0;
             break;
         case 1:
-            brakeLight.style.opacity=1;
-            brakeLight.src="sources/images/adas/gray_steering_wheel.png";
+            autosteerLight.style.opacity=1;
+            autosteerLight.src="sources/images/adas/gray_steering_wheel.png";
             break;
         case 2:
-            brakeLight.style.opacity=1;
-            brakeLight.src = "sources/images/adas/blue_steering_wheel.png";
+            autosteerLight.style.opacity=1;
+            autosteerLight.src = "sources/images/adas/blue_steering_wheel.png";
             break;
         default:
-            brakeLight.style.opacity=1;
-            brakeLight.src = "sources/images/adas/gray_steering_wheel.png";
+            autosteerLight.style.opacity=1;
+            autosteerLight.src = "sources/images/adas/gray_steering_wheel.png";
             break;
     };
+    switch(speedText.innerText){
+      case null:
+        speedText.innerText = '--';
+        break;
+      default:
+        speedText.innerText = (geoDatas.speed)*3.6;
+    }
 }
 // Actualisation affichage véhicule et ADAS
 function refreshADASVisualisation(){
@@ -186,7 +193,7 @@ function refreshADASVisualisation(){
             adasVisualisation.src = "sources/images/adas/no_adas.png";
             break;
     };
-    if(geoDatas.speed <= 2,7){
+    if(geoDatas.speed <= 2.7){
         vehicleVisualisation.src = "sources/images/adas/up_view_car.png";
     }
     else{
@@ -195,8 +202,9 @@ function refreshADASVisualisation(){
 }
 // Interprétation données
 
-
-
+let datasToRefresh = true;
+let firstValue = null;
+let signalProvided = false;
 // Traitement de la position GPS
 geoObserver = navigator.geolocation.watchPosition(
   (position) => {
@@ -207,14 +215,15 @@ geoObserver = navigator.geolocation.watchPosition(
     };
     geoDatas.speed = position.coords.speed;
     geoDatas.orientation = position.coords.heading;
-    //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
-    switch(speedText.innerText){
-      case null:
-        speedText.innerText = '--';
-        break;
-      default:
-        speedText.innerText = (geoDatas.speed)*3.6;
+    if(datasToRefresh && geoDatas.loc.lat != null){
+        firstValue = geoDatas.loc.lat;
+        datasToRefresh = false;
     }
+    if(geoDatas.loc.lat!=firstValue && !signalProvided){
+        displayMessage('Acquisition des données GPS effective');
+        signalProvided = true;
+    }
+    //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
@@ -234,6 +243,7 @@ geoObserver = navigator.geolocation.watchPosition(
   }
 );
 
+
 // Initialisation 
 displayMessage('Initialisation en cours', 1);
 // Init voyants
@@ -248,8 +258,4 @@ refreshLights();
 refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
-const base = geoDatas.loc.lat;
-while(geoDatas.loc.lat == base){
-    const a=1;
-}
-displayMessage('Acquisition des données effective', 1);
+displayMessage('Attente du renouvellement des données GPS...', 1);
