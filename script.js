@@ -11,7 +11,7 @@ geoDatas = {
 // Traitement
 geoObserver = navigator.geolocation.watchPosition(
   (position) => {
-    alertText.innerText = 'Nouvelles données reçues';
+    
     geoDatas.loc = {
       lat: position.coords.latitude,
       lon: position.coords.longitude,
@@ -19,6 +19,7 @@ geoObserver = navigator.geolocation.watchPosition(
     },
     geoDatas.speed = position.coords.speed;
     geoDatas.orientation = position.coords.heading;
+    alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
   },
   (err) => {
     alertText.innerText = 'Erreurs dans la récupération des données' + err.message;
