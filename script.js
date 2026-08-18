@@ -217,13 +217,15 @@ geoObserver = navigator.geolocation.watchPosition(
     }
   },
   (err) => {
-    if(err.message=='Timeout expired'){
+    if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
         displayMessage('Utilisation de données non actualisées', 1);
     }
     else if(err.message=='User denied geolocation prompt'){
         displayMessage('Localisation inactive ou accès non accordé', 1);
     }
-    displayMessage('Erreurs dans la récupération des données :' + err.message, 1);
+    else{
+        displayMessage('Erreurs dans la récupération des données :' + err.message, 1);
+    }
   },
   {
     enableHighAccuracy: true,
