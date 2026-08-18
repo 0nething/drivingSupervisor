@@ -1,5 +1,6 @@
 // Récupération de références vers les éléments de l'interface
 const alertText = document.getElementById("alertMessage");
+const speedText = document.getElementById("speedDisplay");
 
 // Données
 geoDatas = {
@@ -8,7 +9,7 @@ geoDatas = {
   speed: null
 };
 
-// Traitement
+// Traitement de la position GPS
 geoObserver = navigator.geolocation.watchPosition(
   (position) => {
     geoDatas.loc = {
@@ -19,6 +20,13 @@ geoObserver = navigator.geolocation.watchPosition(
     geoDatas.speed = position.coords.speed;
     geoDatas.orientation = position.coords.heading;
     alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
+    switch(speedText.innerText){
+      case null:
+        speedText.innerText = '--';
+        break;
+      default:
+        speedText.innerText = (geoDatas.speed)*3.6 + 'km/h';
+    }
   },
   (err) => {
     alertText.innerText = 'Erreurs dans la récupération des données' + err.message;
@@ -29,3 +37,4 @@ geoObserver = navigator.geolocation.watchPosition(
     timeout:1000,
   }
 );
+
