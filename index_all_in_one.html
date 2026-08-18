@@ -1,4 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <title>Driving supervisor</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 html{
     font-size: 16px; 
@@ -172,3 +180,72 @@ footer{
     height: 20px;
     width: 20px;
 }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" id="drivingInfosZone">
+            <div class="container" id="leftGroup">
+                <div id="driveSelector">
+                    <span id="park">P</span>
+                    <span id="reverse">R</span>
+                    <span id="neutral">N</span>
+                    <span id="drive">D</span></div>
+                <p id="ADASState">{ADAS State}</p>
+            </div>
+            <p id="speedDisplay"><span id="speedValue">00</span> km/h</p>
+        </div>
+        <div id="bottomBorder"></div>
+    </header>
+
+    <main>
+        <aside class="container" id="lightsZone">
+            <img class="light" id="lowBeams" src="sources/images/lights/low_beams.png">
+            <img class="light" id="highBeams" src="sources/images/lights/auto_high_beams.png">
+            <img class="light" id="parkingLight" src="sources/images/lights/parking_brake.png">
+        </aside>
+        <section class="container" id="adasZone">
+                <img class="light" id="leftBlinker" src ="sources/images/lights/left_blinker.png">
+                <img class="adasOverlay" id="adasVisualisation" src="sources/images/adas/no_adas.png">
+                <img class="adasOverlay" id="carVisualisation" src="sources/images/adas/3rd_person_view_car.png">
+                <img class="light" id="rightBlinker" src ="sources/images/lights/right_blinker.png">
+        </section>
+    </main>
+
+    <footer>
+        <div id="alertBox">
+            <img id="alertPicture" src="sources/images/lights/notification_no_padding.png">
+            <p id="alertMessage">{Alert}</p>
+        </div>
+    </footer>
+    <script>
+        // Récupération de références vers les éléments de l'interface
+        const alertText = document.getElementById("alertMessage");
+
+        // Données
+        geoDatas = {
+        loc: {lat: null, lon: null, acc: null},
+        orientation: null,
+        speed: null
+        };
+
+        // Traitement
+        geoObserver = navigator.geolocation.watchPosition(
+        (position) => {
+            alertText.innerText = 'Nouvelles données reçues';
+            geoDatas.loc = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+            acc: position.coords.accuracy,
+            },
+            geoDatas.speed = position.coords.speed;
+            geoDatas.orientation = position.coords.heading;
+        },
+        (err) => {
+            alertText.innerText = 'Erreurs dans la récupération des données' + err.message;
+        }
+        );
+    </script>
+</body>
+</html>
