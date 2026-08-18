@@ -1,6 +1,6 @@
 // Récupération de références vers les éléments de l'interface
 const alertText = document.getElementById("alertMessage");
-const speedText = document.getElementById("speedDisplay");
+const speedText = document.getElementById("speedValue");
 
 // Données
 geoDatas = {
@@ -25,7 +25,7 @@ geoObserver = navigator.geolocation.watchPosition(
         speedText.innerText = '--';
         break;
       default:
-        speedText.innerText = (geoDatas.speed)*3.6 + 'km/h';
+        speedText.innerText = (geoDatas.speed)*3.6;
     }
   },
   (err) => {
