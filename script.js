@@ -11,17 +11,21 @@ geoDatas = {
 // Traitement
 geoObserver = navigator.geolocation.watchPosition(
   (position) => {
-    
     geoDatas.loc = {
       lat: position.coords.latitude,
       lon: position.coords.longitude,
       acc: position.coords.accuracy,
-    },
+    };
     geoDatas.speed = position.coords.speed;
     geoDatas.orientation = position.coords.heading;
     alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
   },
   (err) => {
     alertText.innerText = 'Erreurs dans la récupération des données' + err.message;
+  },
+  {
+    enableHighAccuracy: true,
+    maximumAge:500,
+    timeout:1000,
   }
 );
