@@ -224,7 +224,7 @@ geoObserver = navigator.geolocation.watchPosition(
         displayMessage('Localisation inactive ou accès non accordé', 1);
     }
     else{
-        displayMessage('Erreurs dans la récupération des données :' + err.message, 1);
+        displayMessage('Erreurs dans la récupération des données : ' + err.message, 1);
     }
   },
   {
@@ -247,3 +247,9 @@ refreshLights();
 // Init ADAS
 refreshADASVisualisation();
 displayMessage('Monitoring actif');
+// Attente du premier renouvellement de données
+const base = geoDatas.loc.lat;
+while(geoDatas.loc.lat == base){
+    const a=1;
+}
+displayMessage('Acquisition des données effective', 1);

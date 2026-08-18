@@ -170,6 +170,10 @@ footer{
     transition-duration: 250ms;
 }
 
+#alertMessage{
+    font-weight:600;
+}
+
 #alertPicture{
     height: 20px;
     width: 20px;
