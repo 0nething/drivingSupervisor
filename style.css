@@ -66,7 +66,7 @@ header{
     color: rgb(150, 150, 150);
 }
 
-#park{
+.currentGear{
     color: black;
 }
 
@@ -166,6 +166,8 @@ footer{
     font-size: 14px;
     background-color: black;
     border-radius: 100px;
+    opacity: 0;
+    transition-duration: 250ms;
 }
 
 #alertPicture{

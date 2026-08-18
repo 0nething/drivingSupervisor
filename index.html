@@ -13,10 +13,11 @@
         <div class="container" id="drivingInfosZone">
             <div class="container" id="leftGroup">
                 <div id="driveSelector">
-                    <span id="park">P</span>
+                    <span class="currentGear" id="park">P</span>
                     <span id="reverse">R</span>
                     <span id="neutral">N</span>
-                    <span id="drive">D</span></div>
+                    <span id="drive">D</span>
+                </div>
                 <p id="ADASState">{ADAS State} v0.2</p>
             </div>
             <p id="speedDisplay"><span id="speedValue">00</span> km/h</p>
@@ -27,12 +28,13 @@
     <main>
         <aside class="container" id="lightsZone">
             <img class="light" id="lowBeams" src="sources/images/lights/low_beams.png">
-            <img class="light" id="highBeams" src="sources/images/lights/auto_high_beams.png">
-            <img class="light" id="parkingLight" src="sources/images/lights/parking_brake.png">
+            <img class="light" id="highBeams" src="sources/images/lights/auto_high_beams_on.png">
+            <img class="light" id="brakeLight" src="sources/images/lights/parking_brake.png">
+            <img class="light" id="autosteerLight" src="sources/images/adas/blue_steering_wheel.png">
         </aside>
         <section class="container" id="adasZone">
                 <img class="light" id="leftBlinker" src ="sources/images/lights/left_blinker.png">
-                <img class="adasOverlay" id="adasVisualisation" src="sources/images/adas/no_adas.png">
+                <img class="adasOverlay" id="adasVisualisation" src="sources/images/adas/blue_lanes.png">
                 <img class="adasOverlay" id="carVisualisation" src="sources/images/adas/3rd_person_view_car.png">
                 <img class="light" id="rightBlinker" src ="sources/images/lights/right_blinker.png">
         </section>
