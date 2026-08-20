@@ -201,6 +201,38 @@ function refreshADASVisualisation(){
     }
 }
 // Interprétation données
+let lastPositiveSpeedTime = null;
+let lastRecordedSpeed = null;
+let lastStoppedTime = null;
+let previousSpeed = null;
+function processDatas(){
+    // Définition de la marche et du frein
+    const currentlyProcessedSpeed = geoDatas.speed;
+    if(currentlyProcessedSpeed != null){
+        lastRecordedSpeed = geoDatas.speed;
+        if(currentlyProcessedSpeed > 0){
+            lastPositiveSpeed = new Date();
+            vehicleFeaturesDatas.gear = 3;
+            vehicleFeaturesDatas.brake = 0;
+        }
+        else if(currentlyProcessedSpeed == 0){
+            const currentDate = new Date;
+            lastNullSpeedTime = currentDate;
+            if(lastRecordedSpeed > 0){
+                lastStoppedTime = currentDate;
+            }
+            if((currentDate - lastStoppedTime) > 30000){
+                vehicleFeaturesDatas.gear = 0;
+                vehicleFeaturesDatas.brake = 2;
+            }
+            else if((currentDate - lastStoppedTime) > 15000){
+                vehicleFeaturesDatas.gear = 2;
+                vehicleFeaturesDatas.brake = 1;
+            }
+        }
+    }
+
+}
 
 let datasToRefresh = true;
 let firstValue = null;
@@ -259,3 +291,4 @@ refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
+
