@@ -323,7 +323,8 @@ refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
+let waitingVar = 1;
 while(!signalProvided){
-    //1=1;
+    waitingVar=1;
 }
 displayMessage(''+geoDatas.orientation);
