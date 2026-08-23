@@ -288,7 +288,8 @@ geoObserver = navigator.geolocation.watchPosition(
         signalProvided = true;
     }
     //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
-    displayMessage(''+geoDatas.orientation);
+    alertBox.style.opacity=1
+    alertText.innerText = ''+geoDatas.orientation;
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
