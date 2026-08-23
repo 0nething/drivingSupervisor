@@ -21,7 +21,7 @@ geoDatas = {
 };
 
 vehicleFeaturesDatas = {
-    light: 0,      // off, croisement, route
+    light: 0,      // off, croisement, route, indéfini
     blinker: 0,    // off, left, right, hasard
     gear: 0,       // park, reverse, neutral, drive
     brake: 2,      // off, hold, park
@@ -47,6 +47,11 @@ function clearMessage(){
     alertBox.style.opacity=0;
 }
 
+function defLights(){
+    // Mesure luminosité ambiante (non implémenté)
+    vehicleFeaturesDatas.light=3;
+}
+
 // Actualisation affichage voyants
 function refreshLights(){
     switch(vehicleFeaturesDatas.light){
@@ -62,9 +67,14 @@ function refreshLights(){
             lowBeamLight.style.opacity=1;
             highBeamLight.style.opacity=2;
             break;
+        case 3:
+            lowBeamLight.style.opacity=1;
+            highBeamLight.style.opacity=2;
+            break;
         default:
-            lowBeamLight.style.opacity=0;
+            lowBeamLight.style.opacity=1;
             highBeamLight.style.opacity=1;
+            lowBeamLight.src="sources/images/lights/low_beams_undef.png";
             highBeamLight.src="sources/images/lights/auto_high_beams.png";
             break;
     };
@@ -205,10 +215,12 @@ let lastPositiveSpeedTime = null;
 let lastRecordedSpeed = null;
 let lastStoppedTime = null;
 let previousSpeed = null;
+let previousOrientation = null;
 function processDatas(){
-    // Définition de la marche et du frein
+    // Vérification de la cohérence des données
     const currentlyProcessedSpeed = geoDatas.speed;
     if(currentlyProcessedSpeed != null){
+        // Définition de la marche et du frein
         lastRecordedSpeed = geoDatas.speed;
         if(currentlyProcessedSpeed > 0){
             lastPositiveSpeed = new Date();
@@ -230,6 +242,26 @@ function processDatas(){
                 vehicleFeaturesDatas.brake = 1;
             }
         }
+        
+    }
+    else{
+        displayMessage("Valeurs mesurées incohérentes")
+    }
+    // Définition des phares
+    const previousLightState = vehicleFeaturesDatas.light;
+    defLights();
+    if(vehicleFeaturesDatas.light==3){
+        if(previousLightState!=3){
+            displayMessage("Impossible de déterminer l'état de l'éclairage", 1);
+        }
+    }
+
+    // Définition de clignotants
+    //if(previousOrientation != null && geoDatas.orientation != null){
+
+    //}
+    if(geoDatas.orientation != null){
+        previousOrientation = geoDatas.orientation
     }
 
 }
@@ -291,4 +323,7 @@ refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
-
+while(!signalProvided){
+    1=1;
+}
+displayMessage(''+geoDatas.orientation);
