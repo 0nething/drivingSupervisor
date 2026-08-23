@@ -324,6 +324,6 @@ displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
 while(!signalProvided){
-    1=1;
+    //1=1;
 }
 displayMessage(''+geoDatas.orientation);
