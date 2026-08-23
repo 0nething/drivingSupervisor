@@ -98,6 +98,10 @@ main{
     width: 100%;
 }
 
+img{
+    transform: scale(1.25);
+}
+
 #lightsZone{
     display: flex;
     flex-direction: column;
