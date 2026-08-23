@@ -245,14 +245,14 @@ function processDatas(){
         
     }
     else{
-        displayMessage("Valeurs mesurées incohérentes")
+        //displayMessage("Valeurs mesurées incohérentes")
     }
     // Définition des phares
     const previousLightState = vehicleFeaturesDatas.light;
     defLights();
     if(vehicleFeaturesDatas.light==3){
         if(previousLightState!=3){
-            displayMessage("Impossible de déterminer l'état de l'éclairage", 1);
+            //displayMessage("Impossible de déterminer l'état de l'éclairage", 1);
         }
     }
 
@@ -284,7 +284,7 @@ geoObserver = navigator.geolocation.watchPosition(
         datasToRefresh = false;
     }
     if(geoDatas.loc.lat!=firstValue && !signalProvided){
-        displayMessage('Acquisition des données GPS effective');
+        //displayMessage('Acquisition des données GPS effective');
         signalProvided = true;
     }
     //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
@@ -293,13 +293,13 @@ geoObserver = navigator.geolocation.watchPosition(
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
-        displayMessage('Utilisation de données non actualisées', 1);
+        //displayMessage('Utilisation de données non actualisées', 1);
     }
     else if(err.message=='User denied geolocation prompt'){
-        displayMessage('Localisation inactive ou accès non accordé', 1);
+        //displayMessage('Localisation inactive ou accès non accordé', 1);
     }
     else{
-        displayMessage('Erreurs dans la récupération des données : ' + err.message, 1);
+        //displayMessage('Erreurs dans la récupération des données : ' + err.message, 1);
     }
   },
   {
@@ -311,7 +311,7 @@ geoObserver = navigator.geolocation.watchPosition(
 
 
 // Initialisation 
-displayMessage('Initialisation en cours', 1);
+//displayMessage('Initialisation en cours', 1);
 // Init voyants
 vehicleFeaturesDatas.light=0;
 vehicleFeaturesDatas.blinker=0;
@@ -322,6 +322,6 @@ vehicleFeaturesDatas.sensor=0;
 refreshLights();
 // Init ADAS
 refreshADASVisualisation();
-displayMessage('Monitoring actif');
+//displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
-displayMessage('Attente du renouvellement des données GPS...', 1);
+//displayMessage('Attente du renouvellement des données GPS...', 1);
