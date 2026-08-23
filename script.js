@@ -13,14 +13,30 @@ const adasVisualisation    = document.getElementById("adasVisualisation");
 const leftBlinkerLight     = document.getElementById("leftBlinker");
 const rightBlinkerLight    = document.getElementById("rightBlinker");
 
+let interval = null;
+
+function startProcessingLoop(){
+    if(interval!=null){
+        clearInterval(interval);
+    }
+    interval=setInterval(processDatas, 200);
+}
+
+function stopProcessingLoop(){
+    if(interval!=null){
+        clearInterval(interval);
+        interval=null;
+    }
+}
+
 // Données
-geoDatas = {
+let geoDatas = {
   loc: {lat: null, lon: null, acc: null},
   orientation: null,
   speed: null,
 };
 
-vehicleFeaturesDatas = {
+let vehicleFeaturesDatas = {
     light: 0,      // off, croisement, route, indéfini
     blinker: 0,    // off, left, right, hasard
     gear: 0,       // park, reverse, neutral, drive
@@ -60,16 +76,22 @@ function refreshLights(){
             highBeamLight.style.opacity=0;
             break;
         case 1:
+            lowBeamLight.src="sources/images/lights/low_beams.png";
+            highBeamLight.src="sources/images/lights/auto_high_beams.png";
             lowBeamLight.style.opacity=1;
             highBeamLight.style.opacity=0;
             break;
         case 2:
+            lowBeamLight.src="sources/images/lights/low_beams.png";
+            highBeamLight.src="sources/images/lights/auto_high_beams_on.png";
             lowBeamLight.style.opacity=1;
-            highBeamLight.style.opacity=2;
+            highBeamLight.style.opacity=1;
             break;
         case 3:
+            lowBeamLight.src="sources/images/lights/low_beams_undef.png";
+            highBeamLight.src="sources/images/lights/auto_high_beams.png";
             lowBeamLight.style.opacity=1;
-            highBeamLight.style.opacity=2;
+            highBeamLight.style.opacity=1;
             break;
         default:
             lowBeamLight.style.opacity=1;
@@ -151,12 +173,12 @@ function refreshLights(){
             autosteerLight.src = "sources/images/adas/gray_steering_wheel.png";
             break;
     };
-    switch(speedText.innerText){
+    switch(geoDatas.speed){
       case null:
         speedText.innerText = '--';
         break;
       default:
-        speedText.innerText = (geoDatas.speed)*3.6;
+        speedText.innerText = ((geoDatas.speed)*3.6).toFixed(1);
     }
 }
 // Actualisation affichage véhicule et ADAS
@@ -187,20 +209,28 @@ function refreshADASVisualisation(){
             adasVisualisation.style.opacity=0;
             break;
         case 1:
-            adasVisualisation.style.opacity=1;
-            adasVisualisation.src="sources/images/adas/sensor_far.png";
+            if(vehicleFeaturesDatas.autosteer==0){
+                adasVisualisation.style.opacity=1;
+                adasVisualisation.src="sources/images/adas/sensor_far.png";
+            }
             break;
         case 2:
+            if(vehicleFeaturesDatas.autosteer==0){
             adasVisualisation.style.opacity=1;
             adasVisualisation.src = "sources/images/adas/sensor_medium.png";
+            }
             break;
         case 3:
+            if(vehicleFeaturesDatas.autosteer==0){
             adasVisualisation.style.opacity=1;
             adasVisualisation.src = "sources/images/adas/sensor_close.png";
+            }
             break;
         default:
+            if(vehicleFeaturesDatas.autosteer==0){
             adasVisualisation.style.opacity=1;
             adasVisualisation.src = "sources/images/adas/no_adas.png";
+            }
             break;
     };
     if(geoDatas.speed <= 2.7){
@@ -210,60 +240,86 @@ function refreshADASVisualisation(){
         vehicleVisualisation.src = "sources/images/adas/3rd_person_view_car.png"
     }
 }
+
+
 // Interprétation données
 let lastPositiveSpeedTime = null;
 let lastRecordedSpeed = null;
 let lastStoppedTime = null;
 let previousSpeed = null;
 let previousOrientation = null;
+let blinkerTO=null;
 function processDatas(){
-    // Vérification de la cohérence des données
-    const currentlyProcessedSpeed = geoDatas.speed;
-    if(currentlyProcessedSpeed != null){
-        // Définition de la marche et du frein
-        lastRecordedSpeed = geoDatas.speed;
-        if(currentlyProcessedSpeed > 0){
-            lastPositiveSpeed = new Date();
-            vehicleFeaturesDatas.gear = 3;
-            vehicleFeaturesDatas.brake = 0;
-        }
-        else if(currentlyProcessedSpeed == 0){
-            const currentDate = new Date;
-            lastNullSpeedTime = currentDate;
-            if(lastRecordedSpeed > 0){
-                lastStoppedTime = currentDate;
+    if(signalProvided==true){
+        // Vérification de la cohérence des données
+        const currentlyProcessedSpeed = geoDatas.speed;
+        if(currentlyProcessedSpeed != null){
+            // Définition de la marche et du frein
+            lastRecordedSpeed = currentlyProcessedSpeed;
+            if(currentlyProcessedSpeed > 0){
+                lastPositiveSpeed = new Date();
+                vehicleFeaturesDatas.gear = 3;
+                vehicleFeaturesDatas.brake = 0;
             }
-            if((currentDate - lastStoppedTime) > 30000){
-                vehicleFeaturesDatas.gear = 0;
-                vehicleFeaturesDatas.brake = 2;
+            else if(currentlyProcessedSpeed == 0){
+                const currentDate = new Date();
+                if(lastRecordedSpeed > 0){
+                    lastStoppedTime = currentDate;
+                }
+                if(lastStoppedTime!=null){
+                    if((currentDate - lastStoppedTime) > 30000){
+                        vehicleFeaturesDatas.gear = 0;
+                        vehicleFeaturesDatas.brake = 2;
+                    }
+                    else if((currentDate - lastStoppedTime) > 15000){
+                        vehicleFeaturesDatas.gear = 2;
+                        vehicleFeaturesDatas.brake = 1;
+                    }
+                }
             }
-            else if((currentDate - lastStoppedTime) > 15000){
-                vehicleFeaturesDatas.gear = 2;
-                vehicleFeaturesDatas.brake = 1;
+            
+        }
+        else{
+            displayMessage("Valeurs mesurées incohérentes")
+        }
+        // Définition des phares
+        const previousLightState = vehicleFeaturesDatas.light;
+        defLights();
+        if(vehicleFeaturesDatas.light==3){
+            if(previousLightState!=3){
+                displayMessage("Impossible de déterminer l'état de l'éclairage", 1);
             }
         }
-        
-    }
-    else{
-        //displayMessage("Valeurs mesurées incohérentes")
-    }
-    // Définition des phares
-    const previousLightState = vehicleFeaturesDatas.light;
-    defLights();
-    if(vehicleFeaturesDatas.light==3){
-        if(previousLightState!=3){
-            //displayMessage("Impossible de déterminer l'état de l'éclairage", 1);
+    
+        // Définition de clignotants
+        const currentlyProcessedOrientation = geoDatas.orientation;
+        if(previousOrientation != null && currentlyProcessedOrientation != null){
+            nowOrientation = (currentlyProcessedOrientation+360)%360;
+            prevOrientation = (previousOrientation+360)%360;
+            const orientationDiff = (nowOrientation-prevOrientation+540)%360 - 180;
+    
+            if(orientationDiff<-30){
+                vehicleFeaturesDatas.blinker=1;
+            }
+            if(orientationDiff>30){
+                vehicleFeaturesDatas.blinker=2;
+            }
+            else{
+                vehicleFeaturesDatas.blinker=0;
+            }
+        }
+        if(vehicleFeaturesDatas.blinker!=0){
+            clearTimeout(blinkerTO);
+            blinkerTO=setTimeout(()=>{
+                vehicleFeaturesDatas.blinker=0;
+            }, 3000);
+        }
+        if(currentlyProcessedOrientation != null){
+            previousOrientation = currentlyProcessedOrientation
         }
     }
-
-    // Définition de clignotants
-    //if(previousOrientation != null && geoDatas.orientation != null){
-
-    //}
-    if(geoDatas.orientation != null){
-        previousOrientation = geoDatas.orientation
-    }
-
+    refreshADASVisualisation();
+    refreshLights();
 }
 
 let datasToRefresh = true;
@@ -284,22 +340,20 @@ geoObserver = navigator.geolocation.watchPosition(
         datasToRefresh = false;
     }
     if(geoDatas.loc.lat!=firstValue && !signalProvided){
-        //displayMessage('Acquisition des données GPS effective');
+        displayMessage('Acquisition des données GPS effective');
         signalProvided = true;
     }
     //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
-    alertBox.style.opacity=1
-    alertText.innerText = ''+geoDatas.orientation;
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
-        //displayMessage('Utilisation de données non actualisées', 1);
+        displayMessage('Utilisation de données non actualisées', 1);
     }
     else if(err.message=='User denied geolocation prompt'){
-        //displayMessage('Localisation inactive ou accès non accordé', 1);
+        displayMessage('Localisation inactive ou accès non accordé', 1);
     }
     else{
-        //displayMessage('Erreurs dans la récupération des données : ' + err.message, 1);
+        displayMessage('Erreurs dans la récupération des données : ' + err.message, 1);
     }
   },
   {
@@ -311,7 +365,7 @@ geoObserver = navigator.geolocation.watchPosition(
 
 
 // Initialisation 
-//displayMessage('Initialisation en cours', 1);
+displayMessage('Initialisation en cours', 1);
 // Init voyants
 vehicleFeaturesDatas.light=0;
 vehicleFeaturesDatas.blinker=0;
@@ -322,6 +376,6 @@ vehicleFeaturesDatas.sensor=0;
 refreshLights();
 // Init ADAS
 refreshADASVisualisation();
-//displayMessage('Monitoring actif');
+displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
-//displayMessage('Attente du renouvellement des données GPS...', 1);
+displayMessage('Attente du renouvellement des données GPS...', 1);
