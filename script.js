@@ -178,7 +178,7 @@ function refreshLights(){
         speedText.innerText = '--';
         break;
       default:
-        speedText.innerText = ((geoDatas.speed)*3.6).toFixed(1);
+        speedText.innerText = (geoDatas.speed).toFixed(1);
     }
 }
 // Actualisation affichage véhicule et ADAS
@@ -249,6 +249,7 @@ let lastStoppedTime = null;
 let previousSpeed = null;
 let previousOrientation = null;
 let blinkerTO=null;
+let previousAutosteerState=0;
 function processDatas(){
     if(signalProvided==true){
         // Vérification de la cohérence des données
@@ -317,6 +318,18 @@ function processDatas(){
         if(currentlyProcessedOrientation != null){
             previousOrientation = currentlyProcessedOrientation
         }
+
+        // Définition autopilot
+        if(currentlyProcessedSpeed>=50 && vehicleFeaturesDatas.blinker==0){
+            if(previousAutosteerState!=0){
+                vehicleFeaturesDatas.autosteer = 2;
+            }
+            previousAutosteerState=1;
+        }
+        else{
+            previousAutosteerState=0;
+            vehicleFeaturesDatas.autosteer = 2;
+        }
     }
     refreshADASVisualisation();
     refreshLights();
@@ -333,7 +346,7 @@ geoObserver = navigator.geolocation.watchPosition(
       lon: position.coords.longitude,
       acc: position.coords.accuracy,
     };
-    geoDatas.speed = position.coords.speed;
+    geoDatas.speed = (position.coords.speed)*3.6;
     geoDatas.orientation = position.coords.heading;
     if(datasToRefresh && geoDatas.loc.lat != null){
         firstValue = geoDatas.loc.lat;
@@ -379,3 +392,4 @@ refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
+startProcessingLoop();
