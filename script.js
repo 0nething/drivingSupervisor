@@ -178,7 +178,7 @@ function refreshLights(){
         speedText.innerText = '--';
         break;
       default:
-        speedText.innerText = (geoDatas.speed).toFixed(1);
+        speedText.innerText = geoDatas.speed;
     }
 }
 // Actualisation affichage véhicule et ADAS
@@ -328,7 +328,7 @@ function processDatas(){
         }
         else{
             previousAutosteerState=0;
-            vehicleFeaturesDatas.autosteer = 2;
+            vehicleFeaturesDatas.autosteer = 0;
         }
     }
     refreshADASVisualisation();
@@ -346,7 +346,11 @@ geoObserver = navigator.geolocation.watchPosition(
       lon: position.coords.longitude,
       acc: position.coords.accuracy,
     };
-    geoDatas.speed = (position.coords.speed)*3.6;
+    if(position.coords.accuracy<=15){
+        let rawSpeed = position.coords.speed*3.6;
+        geoDatas.speed = rawSpeed<4 ? 0 : Math.round(rawSpeed);    
+    }
+    geoDatas.speed = Math.round((position.coords.speed)*3.6);
     geoDatas.orientation = position.coords.heading;
     if(datasToRefresh && geoDatas.loc.lat != null){
         firstValue = geoDatas.loc.lat;
@@ -357,6 +361,7 @@ geoObserver = navigator.geolocation.watchPosition(
         signalProvided = true;
     }
     //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
+    processDatas();
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
