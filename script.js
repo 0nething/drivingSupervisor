@@ -242,6 +242,17 @@ function refreshADASVisualisation(){
 }
 
 
+function getDistanceTo(lonDest, latDest){
+    const currentlyProcessedLat = geoDatas.loc.lat;
+    const currentlyProcessedLon = geoDatas.loc.lon;
+    if(currentlyProcessedLat!=null && currentlyProcessedLon!=null){
+        const dlon = (lonDest - currentlyProcessedLon)*111320;
+        const dlat = (latDest - currentlyProcessedLat)*111320;
+
+        return Math.sqrt(dlat*dlat + dlon*dlon);
+    }
+}
+
 // Interprétation données
 let lastPositiveSpeedTime = null;
 let lastRecordedSpeed = null;
