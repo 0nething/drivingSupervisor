@@ -288,6 +288,7 @@ geoObserver = navigator.geolocation.watchPosition(
         signalProvided = true;
     }
     //alertText.innerText = 'Nouvelles données reçues : ' + geoDatas.loc.lat + ';' + geoDatas.loc.lon;
+    displayMessage(''+geoDatas.orientation);
   },
   (err) => {
     if(err.message=='Timeout expired' || err.message=='Position acquisition timed out'){
@@ -323,6 +324,3 @@ refreshADASVisualisation();
 displayMessage('Monitoring actif');
 // Attente du premier renouvellement de données
 displayMessage('Attente du renouvellement des données GPS...', 1);
-while(true){
-    displayMessage(''+geoDatas.orientation);
-}
